@@ -35,27 +35,26 @@ struct sockaddr_in server_addr, client_addr, data_addr;
 struct hostent *server_host;
 
 /*
-Search through str looking for what. Replace any what with
-the contents of by. Do not let the string get longer than max_length.
+通过字符串进行匹配 在不超过限度的情况下 进行内容相关 替换
 */
 int replace(char *str, char *what, char *by, int max_length);
 
-//send msg to server
+//向服务器 发送信息
 void send_msg(char *command, char *msg, int flag);
 
-//some functions
-void help_info();
-void user_login();
-void command_quit();
-void command_syst();
-void command_type();
-void command_pwd();
-void command_cd();
-int command_port();
-int data_conn(char *ip, int port);
-void command_list();
-void command_get(char *filename);
-void command_put(char *filename);
+// 基础命令
+void help_info();// 帮助
+void user_login();// 用户登录
+void command_quit();//用户退出
+void command_syst(); //系统的提示信息
+void command_type();// type命令
+void command_pwd();// 显示当前服务器路径 
+void command_cd();// 切换路劲
+int command_port(); // 主动模式
+int data_conn(char *ip, int port); //建立连接
+void command_list(); // 显示当前信息
+void command_get(char *filename); // 下载文件
+void command_put(char *filename); //  上传文件
 
 
 
