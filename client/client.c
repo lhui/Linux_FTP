@@ -230,7 +230,7 @@ void send_msg(char *command, char *msg, int flag)
 // 发送帮助信息
 void help_info()
 {
-	直接客户端打印信息就好
+	//直接客户端打印信息就好
     printf("?\tcd\tdir\tls\n");
     printf("help\tsyst\ttype\tport\n");
     printf("pwd\tget\tput\tquit\n");
