@@ -266,6 +266,7 @@ void user_login()
     return;
 }
 
+// 显示系统信息 
 void command_syst()
 {
     send_msg("SYST", "", 0);
@@ -274,6 +275,7 @@ void command_syst()
     printf("%s\n", buffer);
 }
 
+// 退出
 void command_quit()
 {
     send_msg("QUIT", "", 0);
@@ -282,6 +284,7 @@ void command_quit()
     printf("%s\n", buffer);
 }
 
+//  显示类型
 void command_type()
 {
     char msg[2];
@@ -302,6 +305,7 @@ void command_type()
     printf("%s\n", buffer);
 }
 
+// 显示服务器的当前路径
 void command_pwd()
 {
     send_msg("PWD", "", 0);
@@ -310,6 +314,7 @@ void command_pwd()
     printf("%s\n", buffer);
 }
 
+// 切换目录
 void command_cd()
 {
     send_msg("CWD", &line_in[3], 1);
@@ -318,6 +323,7 @@ void command_cd()
     printf("%s\n", buffer);
 }
 
+// 主动模式port
 int command_port()
 {
     if(client_sock < 0)
@@ -360,6 +366,8 @@ int command_port()
     return 0;
 }
 
+
+// 数据连接过程
 int data_conn(char *ip, int port)
 {
     client_sock = socket(PF_INET, SOCK_STREAM, 0);
@@ -404,6 +412,8 @@ int data_conn(char *ip, int port)
     return 0;
 }
 
+
+// 显示命令列表
 void command_list()
 {
     unsigned char databuf[PIPE_BUF];
@@ -435,6 +445,7 @@ void command_list()
     printf("%s\n", buffer);
 }
 
+// 下载文件
 void command_get(char *filename)
 {
     FILE *outfile;
@@ -474,6 +485,7 @@ void command_get(char *filename)
     printf("%d bytes get.\n", bytesread);
 }
 
+//  上传文件
 void command_put(char *filename)
 {
     FILE *infile;
