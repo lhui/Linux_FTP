@@ -48,6 +48,7 @@ void bail(const char *on_what)
 /*
 Search through str looking for what. Replace any what with
 the contents of by. Do not let the string get longer than max_length.
+与客户端一样 进行字符串的匹配
 */
 int replace(char *str, char *what, char *by, int max_length)
 {
@@ -55,7 +56,8 @@ int replace(char *str, char *what, char *by, int max_length)
     int i = 0;
     int str_length, what_length, by_length;
     
-    /* do a sanity check */
+
+     // 做检查 
     if (! str) return 0;
     if (! what) return 0;
     if (! by) return 0;
@@ -65,8 +67,8 @@ int replace(char *str, char *what, char *by, int max_length)
     str_length = strlen(str);
     
     foo = strstr(bar, what);
-    /* keep replacing if there is somethign to replace and it
-    will no over-flow
+    /*
+    如果没有一处则可以替换
     */
     while ( (foo) && ( (str_length + by_length - what_length) < (max_length - 1) ) ) 
     {
@@ -80,11 +82,13 @@ int replace(char *str, char *what, char *by, int max_length)
     return i;
 }
 
+// 主函数
 int main(int argc, char **argv)
 {
     printf("\nWelcome to lihui's ftp server!\n");
     
     //get the server socket
+    // 获取服务器端口
     server_sock = socket(PF_INET, SOCK_STREAM, 0);
     if(server_sock == -1)	//create socket failed
     {
@@ -92,7 +96,9 @@ int main(int argc, char **argv)
     }
     else printf("Socket created!\n");
     
+
     //configure server address,port
+    //  配置服务器的地址和端口
     memset(&server_addr, 0 ,sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(SERVER_PORT);
@@ -105,7 +111,7 @@ int main(int argc, char **argv)
     
     server_adr_len = sizeof server_addr;
     
-    //bind
+    //bind 进行数据ip和端口的绑定
     z = bind(server_sock, (struct sockaddr *)&server_addr, server_adr_len);
     if(z == -1)
     {
@@ -113,7 +119,7 @@ int main(int argc, char **argv)
     }
     else printf("Bind Ok!\n");
     
-    //listen
+    //listen 监听
     z = listen(server_sock, 5);
     if(z < 0)
     {
@@ -123,14 +129,17 @@ int main(int argc, char **argv)
     else printf("listening\n");
     
     //loop and wait for connection
+    // 循环等待信息
     while(1)
     {
 	TYPE = TYPE_I;
 	//struct sockaddr_in client_addr;
+	// 定义sockaddr_in .client_addr
 	client_addr_len = sizeof(client_addr);
 	i = 0;
 	printf("wait for accept...\n");
 	//accept an request
+	// 接受请求
 	client_sock = accept(server_sock, (struct sockaddr *)&client_addr, &client_addr_len);
 	if(client_sock < 0)
 	{
@@ -147,7 +156,7 @@ int main(int argc, char **argv)
 	printf("--->%s",reply);
 	while(1){
 	    
-	    //deal with commands
+	    //deal with commands 处理命令和登录信息
 	    z = read(client_sock, buffer, sizeof(buffer));
 	    buffer[z-2] = 0;
 	    printf("z = %d, buffer is '%s'\n",z,buffer);
@@ -156,6 +165,7 @@ int main(int argc, char **argv)
 	    strncpy(command, buffer, 3);
 	    command[3] = 0;
 	    
+	    // 匿名登录
 	    //char username[25] = "anonymous";
 	    if(strcmp(command, "USE") == 0)//USER
 	    {
@@ -174,12 +184,14 @@ int main(int argc, char **argv)
 	    }
 	    else if(strcmp(command, "SYS") == 0)//SYST
 	    {
+	    	// 系统命令
 		stpcpy(reply, "215 UNIX TYPE: L8\r\n");
 		write(client_sock, reply, strlen(reply));
 		printf("%d -->%s", strlen(reply), reply);
 	    }
 	    else if(strcmp(command, "PWD") == 0)//PWD
 	    {
+	    // 下面是切换当前路径
 		stpcpy(reply, "257 ");
 		command_pwd(reply);
 		write(client_sock, reply, strlen(reply));
@@ -187,6 +199,7 @@ int main(int argc, char **argv)
 	    }
 	    else if(strcmp(command, "CWD") == 0)//CWD
 	    {
+
 		stpcpy(reply, "250 CWD command successful\r\n");
 		command_cwd(&buffer[4]);
 		write(client_sock, reply, strlen(reply));
@@ -201,6 +214,7 @@ int main(int argc, char **argv)
 	    }
 	    else if(strcmp(command, "LIS") == 0)//LIST
 	    {
+	    	//  ASCII码传输数据
 		stpcpy(reply, "150 Opening ASCII mode data connection for file list\r\n");
 		write(client_sock, reply, strlen(reply));
 		printf("%d -->%s", strlen(reply), reply);
@@ -217,6 +231,7 @@ int main(int argc, char **argv)
 	    }
 	    else if(strcmp(command, "RET") == 0)//RETR
 	    {
+	    	// 传递数据
 		sprintf(reply, "150 Opening %s mode data connection for %s (? bytes)\r\n", MODE[TYPE], &buffer[5]);
 		write(client_sock, reply, strlen(reply));
 		printf("%d -->%s", strlen(reply), reply);
@@ -227,6 +242,7 @@ int main(int argc, char **argv)
 	    }
 	    else if(strcmp(command, "STO") == 0)//STOR
 	    {
+	    //  传输数据
 		sprintf(reply, "150 Opening %s mode data connection for %s (? bytes)\r\n", MODE[TYPE], &buffer[5]);
 		write(client_sock, reply, strlen(reply));
 		printf("%d -->%s", strlen(reply), reply);
@@ -236,6 +252,7 @@ int main(int argc, char **argv)
 	    }
 	    else if(strcmp(command, "QUI") == 0)//QUIT
 	    {
+	    	// 退出的指令
 		stpcpy(reply, "221 Goodbye.\r\n");
 		write(client_sock, reply, strlen(reply));
 		printf("%d -->%s", strlen(reply), reply);
@@ -252,7 +269,7 @@ int main(int argc, char **argv)
 
 
 
-
+// 获取当前路径
 void command_pwd(char *reply)
 {
     char buf[255];
@@ -262,12 +279,14 @@ void command_pwd(char *reply)
     return;
 }
 
+ // 显示目标文件夹目录
 void command_cwd(char *dir)
 {
     
     chdir(dir);
 }
 
+// port 指令
 void command_port(char *params, char *reply)
 {
     unsigned long a0, a1, a2, a3, p0, p1, addr;
@@ -305,7 +324,7 @@ void command_port(char *params, char *reply)
     stpcpy(reply, "200 PORT command successful\r\n");
 }
 
-
+ // 命令行
 void command_list(char *reply)
 {
     FILE *fcmd;
@@ -338,6 +357,7 @@ void command_list(char *reply)
     return;
 }
 
+//  文件传输类型
 void command_type(char *type, char *reply)
 {
     switch(type[0])
@@ -358,6 +378,7 @@ void command_type(char *type, char *reply)
     return;
 }
 
+// 文件传输
 void command_retr(char *filename, char *reply)
 {
     FILE *infile;
@@ -394,6 +415,7 @@ void command_retr(char *filename, char *reply)
     return;
 }
 
+//  文件储存
 void command_stor(char *filename, char *reply)
 {
     FILE *outfile;
