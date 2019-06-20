@@ -1,8 +1,3 @@
-/**********************************************************
-** File Name:server.c
-*  Author:Wangmeng
-*  Data:2010.06.01
-**********************************************************/
 #include<stdio.h>
 #include<unistd.h>
 #include<stdlib.h>
@@ -87,7 +82,7 @@ int replace(char *str, char *what, char *by, int max_length)
 
 int main(int argc, char **argv)
 {
-    printf("\nWelcome to wangmeng's ftp server!\n");
+    printf("\nWelcome to lihui's ftp server!\n");
     
     //get the server socket
     server_sock = socket(PF_INET, SOCK_STREAM, 0);

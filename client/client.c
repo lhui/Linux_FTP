@@ -1,8 +1,3 @@
-/**********************************************************
-** File Name:client.c
-*  Author:Wangmeng
-*  Data:2010.06.01
-**********************************************************/
 #include<stdio.h>
 #include<unistd.h>
 #include<stdlib.h>
@@ -20,6 +15,7 @@
 
 #define MAX_INPUT_SIZE 254
 #define LOCAL_IP "127.0.0.1"
+//#define LOCAL_IP "18.139.78.88"
 #define SERVER_PORT 2049
 #define DATA_PORT 2048
 #define FILEBUF_SIZE 1024
