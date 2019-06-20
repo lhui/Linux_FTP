@@ -57,9 +57,10 @@ void command_get(char *filename); // 下载文件
 void command_put(char *filename); //  上传文件
 
 
-
+// 构建主函数 
 int main(int argv, char **argc)
 {
+	// 如果 没有参数
     if(argv == 1)
     {
 	server_ip = LOCAL_IP;
@@ -67,11 +68,13 @@ int main(int argv, char **argc)
     }
     else if(argv == 2)
     {
+    	// 有一个参数
 	server_ip = argc[1];
 	server_port = SERVER_PORT;
     }
     else if(argv == 3)
     {
+    	// 有两个参数
 	server_ip = argc[1];
 	server_port = atoi(argc[2]);
     }
@@ -82,19 +85,19 @@ int main(int argv, char **argc)
 	printf(">gethostbyname failed\n");
 	exit(1);
     }
-    //setup the port for the connection
+    //建立ftp 连接
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     memcpy(&server_addr.sin_addr, server_host->h_addr, server_host->h_length);
     server_addr.sin_port = htons(server_port);
-    //get the socket
+    //获取socket端口
     server_sock = socket(PF_INET, SOCK_STREAM, 0);
     if(server_sock < 0)
     {
 	printf(">error on socket()\n");
 	exit(1);
     }
-    //connect to the server
+    //连接到服务器
     if(connect(server_sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
     {
 	printf(">error on connect()\n");
@@ -102,19 +105,24 @@ int main(int argv, char **argc)
 	exit(1);
     }
     
-    //connect to the ftp server successful
+    //连接成功
     printf(">Connected to %s:%d\n", server_ip, server_port);
     z = read(server_sock, buffer, sizeof(buffer));
     buffer[z-2] = 0;
     printf("%s\n", buffer);
     //printf("z = %d, buffer is '%s'\n",z,buffer);
-    //login
+    
+    //登录信息
     user_login();
+    //开始进入系统进行操作
     while(1)
     {
+    	// 获取输入信息
 	printf(">");
 	fgets(line_in, MAX_INPUT_SIZE, stdin);
 	line_in[strlen(line_in)-1] = '\0';
+	//执行命令
+	// 退出
 	if(strncmp("quit", line_in, 4) == 0)
 	{
 	    command_quit();
@@ -122,50 +130,59 @@ int main(int argv, char **argc)
 	}
 	else if((strncmp("?", line_in, 1) == 0) || (strncmp("help", line_in, 4) == 0))
 	{
+		//  帮助命令
 	    help_info();
 	}
 	else if(strncmp("syst", line_in, 4) == 0)
 	{
+		// 系统参数命令
 	    command_syst();
 	}
 	else if(strncmp("type", line_in, 4) == 0)
 	{
+		// 种类命令
 	    command_type();
 	}
 	else if(strncmp("pwd", line_in, 3) == 0)
 	{
+		// 显示当前服务器命令
 	    command_pwd();
 	}
 	else if(strncmp("cd", line_in, 2) == 0)
 	{
+		// 切换服务器路径命令
 	    command_cd();
 	}
 	else if(strncmp("port", line_in, 4) == 0)
 	{
+		// port模式
 	    command_port();
 	}
 	else if((strncmp("ls", line_in, 4) == 0) || (strncmp("dir", line_in, 3) == 0))
 	{
+		// 显示服务器文件
 	    command_list();
 	}
 	else if(strncmp("get", line_in, 3) == 0)
 	{
+		// 下载文件
 	    command_get(&line_in[4]);
 	}
 	else if(strncmp("put", line_in, 3) == 0)
 	{
+		// 上传文件
 	    command_put(&line_in[4]);
 	}
 	
     }
+    // 关闭socket连接
     close(server_sock);
     return 0;
 }
 
 
 /*
-Search through str looking for what. Replace any what with
-the contents of by. Do not let the string get longer than max_length.
+搜寻相关的命令进行 匹配替换 （不要超过指定的最长长度 max_login）
 */
 int replace(char *str, char *what, char *by, int max_length)
 {
@@ -173,7 +190,7 @@ int replace(char *str, char *what, char *by, int max_length)
     int i = 0;
     int str_length, what_length, by_length;
     
-    /* do a sanity check */
+    // 做一个检查 
     if (! str) return 0;
     if (! what) return 0;
     if (! by) return 0;
@@ -183,8 +200,8 @@ int replace(char *str, char *what, char *by, int max_length)
     str_length = strlen(str);
     
     foo = strstr(bar, what);
-    /* keep replacing if there is somethign to replace and it
-    will no over-flow
+    /* 
+    如果能替换且没有发生一处就可以替换 否则不可以替换
     */
     while ( (foo) && ( (str_length + by_length - what_length) < (max_length - 1) ) ) 
     {
@@ -198,7 +215,7 @@ int replace(char *str, char *what, char *by, int max_length)
     return i;
 }
 
-//send msg to server
+//向服务器发送信息
 void send_msg(char *command, char *msg, int flag)
 {
     char reply[MAX_INPUT_SIZE+1];
@@ -210,27 +227,30 @@ void send_msg(char *command, char *msg, int flag)
     printf("%d-->%s",strlen(reply), reply);
     return;
 }
-
+// 发送帮助信息
 void help_info()
 {
+	直接客户端打印信息就好
     printf("?\tcd\tdir\tls\n");
     printf("help\tsyst\ttype\tport\n");
     printf("pwd\tget\tput\tquit\n");
 }
-
+//发送用户登录信息
 void user_login()
 {
+	//发送登录信息到服务器
     printf(">Name:");
     fgets(line_in, MAX_INPUT_SIZE, stdin);
     line_in[strlen(line_in)-1] = '\0';
-    send_msg("USER", line_in, 1);
+    send_msg("USER", line_in, 1); // 发送用户名的信息
     
-    z = read(server_sock, buffer, sizeof(buffer));
+    z = read(server_sock, buffer, sizeof(buffer)); // 读取服务器中用户名的信息
     buffer[z-2] = 0;
-    printf("%s\n", buffer);
+    printf("%s\n", buffer); // 发音相关的返回信息
     //printf("z = %d, buffer is '%s'\n",z,buffer);
     if(strncmp("331", buffer, 3) == 0)
     {
+    	// 输入密码界面
 	printf(">Password:");
 	fgets(line_in, MAX_INPUT_SIZE, stdin);
 	line_in[strlen(line_in)-1] = '\0';
@@ -501,15 +521,3 @@ void command_put(char *filename)
     printf("%d bytes send\n", bytessend);
     return;
 }
-
-
-
-
-
-
-
-
-
-
-
-
