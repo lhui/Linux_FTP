@@ -240,11 +240,12 @@ void user_login()
 {
 	int choose=0;
 	printf("请输入您要采取的登录方式（匿名0 非匿名1）");
-	scanf("%d",choose);
-
+	scanf("%d",&choose);
+	getchar();
 	if(choose==0)
 	{
 	//发送登录信息到服务器
+	
     printf("(ftp)>Name:");
     fgets(line_in, MAX_INPUT_SIZE, stdin);
     line_in[strlen(line_in)-1] = '\0';
@@ -271,7 +272,7 @@ void user_login()
     command_syst();
     return;
     }
-    else if(choose=1)
+    else if(choose==1)
     {
     //账号 hui
     //密码 hui
