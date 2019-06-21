@@ -238,6 +238,12 @@ void help_info()
 //发送用户登录信息
 void user_login()
 {
+	int choose=0;
+	printf("请输入您要采取的登录方式（匿名0 非匿名1）");
+	scanf("%d",choose);
+
+	if(choose==0)
+	{
 	//发送登录信息到服务器
     printf("(ftp)>Name:");
     fgets(line_in, MAX_INPUT_SIZE, stdin);
@@ -246,7 +252,7 @@ void user_login()
     
     z = read(server_sock, buffer, sizeof(buffer)); // 读取服务器中用户名的信息
     buffer[z-2] = 0;
-    printf("%s\n", buffer); // 发音相关的返回信息
+    printf("%s\n", buffer); // 打印相关的返回信息
     //printf("z = %d, buffer is '%s'\n",z,buffer);
     if(strncmp("331", buffer, 3) == 0)
     {
@@ -264,6 +270,61 @@ void user_login()
     line_in[0] = 0;
     command_syst();
     return;
+    }
+    else if(choose=1)
+    {
+    //账号 hui
+    //密码 hui
+
+    
+    while(1)
+    {
+    printf("(ftp)>Name:");
+    fgets(line_in, MAX_INPUT_SIZE, stdin);
+    line_in[strlen(line_in)-1] = '\0';
+    // 用户名验证  用户名 hui
+    while(strcmp(line_in,"hui")!=0)
+    {
+    	printf("对不起，用户名有误 请重新输入！\n");
+        printf("(ftp)>Name:");
+        fgets(line_in, MAX_INPUT_SIZE, stdin);
+        line_in[strlen(line_in)-1] = '\0';
+    }
+
+    send_msg("USER", line_in, 1); // 发送用户名的信息
+    
+    z = read(server_sock, buffer, sizeof(buffer)); // 读取服务器中用户名的信息
+    buffer[z-2] = 0;
+    printf("%s\n", buffer); // 打印相关的返回信息
+    //printf("z = %d, buffer is '%s'\n",z,buffer);
+    if(strncmp("331", buffer, 3) == 0)
+    {
+    	// 输入密码界面
+    	// 密码验证 密码 hui
+    
+	printf("(ftp)>Password:");
+	fgets(line_in, MAX_INPUT_SIZE, stdin);
+	line_in[strlen(line_in)-1] = '\0';
+    while(strcmp(line_in,"hui")!=0)
+    {
+    	printf("对不起，密码有误 请重新输入！\n");
+        printf("(ftp)>Password:");
+	    fgets(line_in, MAX_INPUT_SIZE, stdin);
+	    line_in[strlen(line_in)-1] = '\0';
+    }
+	send_msg("PASS", line_in, 1);
+	
+	z = read(server_sock, buffer, sizeof(buffer));
+	buffer[z-2] = 0;
+	printf("%s\n", buffer);
+	//printf("z = %d, buffer is '%s'\n",z,buffer);
+    }
+    line_in[0] = 0;
+    command_syst();
+    return;
+
+    }
+}
 }
 
 // 显示系统信息 
