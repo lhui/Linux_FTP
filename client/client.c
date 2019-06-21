@@ -82,7 +82,7 @@ int main(int argv, char **argc)
     server_host = gethostbyname(server_ip);
     if(server_host == (struct hostent *)NULL)
     {
-	printf(">gethostbyname failed\n");
+	printf("(ftp)>gethostbyname failed\n");
 	exit(1);
     }
     //建立ftp 连接
@@ -94,19 +94,19 @@ int main(int argv, char **argc)
     server_sock = socket(PF_INET, SOCK_STREAM, 0);
     if(server_sock < 0)
     {
-	printf(">error on socket()\n");
+	printf("(ftp)>error on socket()\n");
 	exit(1);
     }
     //连接到服务器
     if(connect(server_sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
     {
-	printf(">error on connect()\n");
+	printf("(ftp)>error on connect()\n");
 	close(server_sock);
 	exit(1);
     }
     
     //连接成功
-    printf(">Connected to %s:%d\n", server_ip, server_port);
+    printf("(ftp)>Connected to %s:%d\n", server_ip, server_port);
     z = read(server_sock, buffer, sizeof(buffer));
     buffer[z-2] = 0;
     printf("%s\n", buffer);
@@ -118,7 +118,7 @@ int main(int argv, char **argc)
     while(1)
     {
     	// 获取输入信息
-	printf(">");
+	printf("(ftp)>");
 	fgets(line_in, MAX_INPUT_SIZE, stdin);
 	line_in[strlen(line_in)-1] = '\0';
 	//执行命令
@@ -239,7 +239,7 @@ void help_info()
 void user_login()
 {
 	//发送登录信息到服务器
-    printf(">Name:");
+    printf("(ftp)>Name:");
     fgets(line_in, MAX_INPUT_SIZE, stdin);
     line_in[strlen(line_in)-1] = '\0';
     send_msg("USER", line_in, 1); // 发送用户名的信息
@@ -251,7 +251,7 @@ void user_login()
     if(strncmp("331", buffer, 3) == 0)
     {
     	// 输入密码界面
-	printf(">Password:");
+	printf("(ftp)>Password:");
 	fgets(line_in, MAX_INPUT_SIZE, stdin);
 	line_in[strlen(line_in)-1] = '\0';
 	send_msg("PASS", line_in, 1);
